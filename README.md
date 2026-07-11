@@ -3,9 +3,12 @@
 I loved how Art Institute of Chicago website gallery layout looks. Equal columns, image is always at native ratio, no empty space. Starts in a neat grid, but slowly deteriorates into chaos. So pretty. 
 
 Turns out you can't do that with css, so I wrote a small js script that achieves this behaviour.
+Gallery is primarily for organizing actual elements, CSS is on you.
 
-![gallery_showcase_css](img/css_example.png)
-![gallery_showcase_raw](img/raw_example.png)
+*example with custom css*
+![gallery_showcase_css](img/gallery_showcase_css.png)
+*how raw gallery looks*
+![gallery_showcase_raw](img/gallery_showcase_raw.png)
 
  ## What can it do?
  
