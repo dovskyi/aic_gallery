@@ -20,6 +20,20 @@ function _smallestInArray(arr_col) {
         return indx;
 }
 
+function _get_margins(block) {
+        //here block is user's entry container
+        let spacing = 0;
+        let style = window.getComputedStyle(block);
+        spacing  = (parseFloat(style.marginLeft) || 0) +
+                   (parseFloat(style.marginRight) || 0) +
+                   (parseFloat(style.paddingLeft) || 0) +
+                   (parseFloat(style.paddingRight) || 0) +
+                   (parseFloat(style.borderLeftWidth) || 0) +
+                   (parseFloat(style.borderRightWidth) || 0);
+
+        return spacing;
+}
+
 function gallery_init(arr, gallery_container, cols, template, load_delay){
 
         const timeout = (load_delay === undefined)? false: true;
@@ -31,8 +45,11 @@ function gallery_init(arr, gallery_container, cols, template, load_delay){
                 if (cols < 1) {
                         window.alert("Gallery columns can't be <1");
                 }
+                if (arr.length < 1) {
+                        return;
+                }
                 gallery_wrapper.insertAdjacentHTML("beforeend", `<div id='gallery_cont${_gallID}' class='gallery_cont'></div>`);
-                gallery_wrapper.insertAdjacentHTML("beforeend", `<div id='temp_holder${_gallID}' style="display:none;" ></div>`);
+                gallery_wrapper.insertAdjacentHTML("beforeend", `<div id='temp_holder${_gallID}' style='visibility: hidden; position:absolute;'></div>`);
                 const temp = document.getElementById(`temp_holder${_gallID}`);
                 const container = document.getElementById(`gallery_cont${_gallID}`);
 
@@ -57,6 +74,8 @@ function gallery_init(arr, gallery_container, cols, template, load_delay){
                 //(has to be a static array, because children method itself
                 //actually returns an HTMLCollection)
                 let blocks = Array.from(temp.children);
+                let margin_spacing = _get_margins(blocks[0].firstElementChild);
+                let scale_width = col_width - margin_spacing;
 
                 for (const block of blocks) {
                         //create parent div for image
@@ -72,13 +91,14 @@ function gallery_init(arr, gallery_container, cols, template, load_delay){
                         const r = img_width/img_height;
                         //force wrapper div into img dimensions
                         img_wrap.style.display = "block";
-                        img_wrap.style.width = col_width + "px";
-                        img_wrap.style.height = col_width/r + "px";
+                        img_wrap.style.width = scale_width + "px";
+                        img_wrap.style.height = scale_width/r + "px";
 
                         //append block to shortest column
                         //appendChild removes duplicates automatically
                         const curr_index = _smallestInArray(arr_col);
                         arr_col[curr_index].appendChild(block);
+
                         if (timeout) {
                                 //cosmetic delay if user wants
                                 await _delay(load_delay);

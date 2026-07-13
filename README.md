@@ -32,9 +32,9 @@ load_delay[OPTIONAL]: it can look cool! (set in milliseconds)
 
 ### Initialization Examples:
 
-**You MUST add data-width and data-height as INT to <img> tag, see below in example**
+**You MUST add data-width and data-height as INT to \<img\> tag, see below in example**
 
-*Note, AIC website itself uses pre-calculated img dimensions, so all fair**
+*Note, AIC website itself uses pre-calculated img dimensions, so all fair*
 
 This gallery would:
 * take in an associative PHP array, 
@@ -48,17 +48,17 @@ This gallery would:
 <script src="/libs/aic_gallery.js"></script>
 
 <script>
-const array = <?php echo json_encode($image_array) ?>;
+const arr = <?php echo json_encode($image_array) ?>;
 const container_id = "gallery_container";
 const cols = 3;
 
-gallery_init(array, container_id, cols, function(entry){
+gallery_init(arr, container_id, cols, function(entry){
     return `
         <div class="entry_container">
             <img 
             src="${entry.image_path}" 
-            data-width=${entry.width}   // <- required in this format
-            data-height=${entry.height} // <- required in this format
+            data-width=${entry.width}
+            data-height=${entry.height}
             >
 
             <span class="entry_title"><b>${entry.image_title}</b></span>
@@ -79,11 +79,11 @@ Simpler example with just an image and a cosmetic 250ms delay:
 <script src="/libs/aic_gallery.js"></script>
 
 <script>
-const array = [["/path/to/img1", 480, 280],["/path/to/img2", 1080, 2042]];
+const arr = [["/path/to/img1", 480, 280],["/path/to/img2", 1080, 2042]];
 const container_id = "some_other_container";
 const cols = 3;
 
-gallery_init(array, container_id, cols, function(entry){
+gallery_init(arr, container_id, cols, function(entry){
     return 
         `<img 
         src="${entry[0]}" 
@@ -101,4 +101,4 @@ gallery_init(array, container_id, cols, function(entry){
 ## CSS and function(entry)
 As you can see, you can enter anything into return as a string, and that will be the structure for every item in the gallery. This means that all you have to do to change CSS is create your own wrappers and rules for them. For example, in init function #1, "entry_container" is a custom class with its own css rules. Want a description for image? Add a div, add a variable, write css rule, and that is it. 
 
-**One rule for CSS -- item container cannot have padding and image cannot have margins. Image must touch the walls of item container. Item container can have margins, but not the image.**
+Your entry must have a div that wraps the entire item, and **all horizontal margins/padding/borders should only be applied to that div**. Gallery does make one for its own purposes, but it calculates margins only for 1st child, which would be your wrapper div. If you apply horizontal shift to internal elements, it will break the layout.
