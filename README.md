@@ -1,6 +1,6 @@
 # AIC GALLERY
 
-I loved how Art Institute of Chicago website gallery layout looks. Equal columns, image is always at native ratio, no empty space. Starts in a neat grid, but slowly deteriorates into chaos. So pretty. 
+I loved how AICs Website Gallery looks. Equal columns, image is at native ratio, no empty space. Layout is not chaotic, but at the same time not overly linear. Very elegant.
 
 Turns out you can't do that with css, so I wrote a small js script that achieves this behaviour.
 Gallery is primarily for organizing actual elements, CSS is on you.
@@ -10,51 +10,61 @@ Gallery is primarily for organizing actual elements, CSS is on you.
 *how raw gallery looks*
 ![gallery_showcase_raw](img/gallery_showcase_raw.png)
 
- ## What can it do?
- 
-* Read an array, e.g. whatever php spits out
-* Assign any template for an item, it doesn't have to be a single \<img\>
-* Maintain a neat vertical gap between columns - one column will never be *much* taller than other ones
-* You can have multiple on the same page, IDs are unique
-
 ## What do you need?
 
-* A container div with unique id (where gallery will live)
+* A div with unique id that will contain the gallery
 * An array of whatever you want to output
-* Path to where you saved aic_gallery css file
+* Height and Width in px for **every** image in array
+* Manually link the aic_gallery.css file
 
 ## USAGE
-Gallery is initialized using `gallery_init()` function. There are some required arguments:
+Gallery is initialized using `gallery_init()` function. There are some arguments:
 ```
-gallery_init(array, container_id, cols, path, template, load_delay);
+gallery_init(array, container_id, cols, template, load_delay);
 
 array: your array with items
 container_id: id of a container where the gallery will be contained
 cols: amount of columns you want to have (3-4 is good)
-path: path to aic_gallery.css file that you saved
-template: how will an item look?
+template: string of HTML elements for a single entry
 
-load_delay[OPTIONAL]: each image waits 50ms to load by default. I found that raising this to ~250ms creates a nice appearing sequence, almost as if it was intended. If you want default, just do not enter the last argument, or put "undefined"
+load_delay[OPTIONAL]: it can look cool! (set in milliseconds)
 ```
 
 ### Initialization Examples:
-This gallery would take in an associative PHP array, bind to a container with id "gallery_container", have 3 columns, reference a css file at that path, and output a specific DOM structure for each element. **All you need to change the structure is just replace the return string.**
+
+**You MUST add data-width and data-height as INT to <img> tag, see below in example**
+
+*Note, AIC website itself uses pre-calculated img dimensions, so all fair**
+
+This gallery would:
+* take in an associative PHP array, 
+* bind to a container with id "gallery_container"
+* have 3 columns
+* output a specific DOM structure for each element. 
+
 ```
+<link rel='stylesheet' href="/css/aic_gallery.css">
+
 <script src="/libs/aic_gallery.js"></script>
+
 <script>
 const array = <?php echo json_encode($image_array) ?>;
 const container_id = "gallery_container";
 const cols = 3;
-const path = '/css/aic_gallery.css';
 
-gallery_init(array, container_id, cols, path, function(entry){
-									return 
-									`<div class="entry_container">
-											<img src="${entry.image_path}">
-											<span class="entry_title"><b>${entry.image_title}</b></span>
-											<span class="entry_date">${entry.image_date}</span>
-									</div>`
-									;});
+gallery_init(array, container_id, cols, function(entry){
+    return `
+        <div class="entry_container">
+            <img 
+            src="${entry.image_path}" 
+            data-width=${entry.width}   // <- required in this format
+            data-height=${entry.height} // <- required in this format
+            >
+
+            <span class="entry_title"><b>${entry.image_title}</b></span>
+            <span class="entry_date">${entry.image_date}</span>
+        </div>`
+;});
 </script>
 
 <div id="gallery_container" class="gallery_container"></div>
@@ -63,17 +73,24 @@ gallery_init(array, container_id, cols, path, function(entry){
 ```
 Simpler example with just an image and a cosmetic 250ms delay:
 ```
+
+<link rel='stylesheet' href="/css/aic_gallery.css">
+
 <script src="/libs/aic_gallery.js"></script>
+
 <script>
-const array = ["/path/to/img1", "/path/to/img2", "/path/to/img3];
+const array = [["/path/to/img1", 480, 280],["/path/to/img2", 1080, 2042]];
 const container_id = "some_other_container";
 const cols = 3;
-const path = '/css/aic_gallery.css';
 
-gallery_init(array, container_id, cols, path, function(entry){
-									return 
-											`<img src="${entry.image_path}">`
-									;}, 250);
+gallery_init(array, container_id, cols, function(entry){
+    return 
+        `<img 
+        src="${entry[0]}" 
+        data-width=${entry[1]}
+        data-height=${entry[2]}
+        >`
+    ;}, 250);
 </script>
 
 <div id="some_other_container" class="gallery_container"></div>
@@ -81,5 +98,7 @@ gallery_init(array, container_id, cols, path, function(entry){
 
 ```
 
-## CSS
-Since you can input any DOM template, you can just add your own css to an item. Changing css for internal components (e.g. columns) is easy too, just look inside aic_gallery.css file. Some elements are appended as a string in .js file, so if you wish you can modify that string.
+## CSS and function(entry)
+As you can see, you can enter anything into return as a string, and that will be the structure for every item in the gallery. This means that all you have to do to change CSS is create your own wrappers and rules for them. For example, in init function #1, "entry_container" is a custom class with its own css rules. Want a description for image? Add a div, add a variable, write css rule, and that is it. 
+
+**One rule for CSS -- item container cannot have padding and image cannot have margins. Image must touch the walls of item container. Item container can have margins, but not the image.**
