@@ -7,10 +7,10 @@ let _gallID = 0; //global gallery ID
 var _instances = []; //data for all galleries on page
 const _delay = ms => new Promise(res => setTimeout(res, ms));
 
-function _smallestInArray(arr_col, cols) {
+function _smallestInArray(arr_col, col) {
         let a = Number.MAX_SAFE_INTEGER;
         let indx = 0;
-        for (let i=0; i<cols; i++){
+        for (let i=0; i<col; i++){
                 let h = arr_col[i].offsetHeight;
                 if (a > h) {
                         a = h;
@@ -35,7 +35,7 @@ function _get_margins(block) {
 }
 
 
-function gallery_init(arr, gallery_container, cols, template, load_delay){
+function gallery_init(arr, gallery_container, col, template, load_delay){
 
         const timeout = (load_delay === undefined)? false: true;
 
@@ -47,9 +47,8 @@ function gallery_init(arr, gallery_container, cols, template, load_delay){
                                                 blocks: []};
 
                 let arr_col = _instances[gallery_container].arr_col;
-                let blocks = _instances[gallery_container].blocks;
 
-                if (cols < 1) {
+                if (col < 1) {
                         window.alert("Gallery columns can't be <1");
                 }
                 gallery_wrapper.insertAdjacentHTML("beforeend", `<div id='gallery_cont${_gallID}' class='gallery_cont'></div>`);
@@ -57,14 +56,13 @@ function gallery_init(arr, gallery_container, cols, template, load_delay){
                 const temp = document.getElementById(`temp_holder${_gallID}`);
                 const container = document.getElementById(`gallery_cont${_gallID}`);
 
-
-
-                for (let i=0; i<cols; i++) {
+                for (let i=0; i<col; i++) {
                         //partition the container into n columns, write columns into array
                         let col = `<div id="col_${i}${_gallID}" class="gallery_col"><div id="wrapper_col_${i}${_gallID}"></div></div>`;
                         container.insertAdjacentHTML("beforeend", col);
                         arr_col.push(document.getElementById(`wrapper_col_${i}${_gallID}`));
                 }
+
                 if (arr.length < 1) {
                         temp.remove();
                         return;
@@ -80,7 +78,9 @@ function gallery_init(arr, gallery_container, cols, template, load_delay){
                 //now that we have all blocks as objects, write them into array
                 //(has to be a static array, because children method itself
                 //actually returns an HTMLCollection)
-                blocks = Array.from(temp.children);
+                _instances[gallery_container].blocks = Array.from(temp.children);
+                let blocks = _instances[gallery_container].blocks;
+
                 let margin_spacing = _get_margins(blocks[0].firstElementChild);
                 let scale_width = col_width - margin_spacing;
 
@@ -105,7 +105,7 @@ function gallery_init(arr, gallery_container, cols, template, load_delay){
 
                         //append block to shortest column
                         //appendChild removes duplicates automatically
-                        const curr_index = _smallestInArray(arr_col, cols);
+                        const curr_index = _smallestInArray(arr_col, col);
                         arr_col[curr_index].appendChild(block);
 
                         if (timeout) {
@@ -117,7 +117,7 @@ function gallery_init(arr, gallery_container, cols, template, load_delay){
         });
 }
 
-function aic_rearrange(cols, gallery_container){
+function aic_rearrange(col, gallery_container){
         const arr_col = _instances[gallery_container].arr_col;
         const blocks = _instances[gallery_container].blocks;
 
@@ -138,16 +138,16 @@ function aic_rearrange(cols, gallery_container){
         }
 
         //toggle visibility for columns
-        for (let i=0; i<cols; i++) {
-                arr_col[i].style.display = '';
+        for (let i=0; i<col; i++) {
+                arr_col[i].parentNode.style.display = '';
         }
-        for (let i=maxCols; i>cols; i--) {
-                arr_col[i-1].style.display = 'none';
+        for (let i=maxCols; i>col; i--) {
+                arr_col[i-1].parentNode.style.display = 'none';
         }
 
         //reappend blocks to visible columns
         for (const block of blocks) {
-                const curr_index = _smallestInArray(arr_col, cols);
+                const curr_index = _smallestInArray(arr_col, col);
                 arr_col[curr_index].appendChild(block);
         }
 
