@@ -78,14 +78,14 @@ return
 </script>
 ```
 ## Required Syntax & limitations
-* \<img\> element **must** have data-width and data-height as INT.
+* If your entry has an image, \<img\> element **must** have data-width and data-height as INT.
 * Entry must have some sort of item wrapper div, e.g.:
 ```
 <div class="required_wrapper">
 	//whatever you need for single item
 </div>
 ```
-* **Only item wrapper can have horizontal margins/padding/borders**. Vertical is fine for any internal element. If you want distance between columns, add margins to the item wrapper. There is usually no need to edit library css, unless you are doing something very specific.
+* **Only item wrapper can have horizontal margins/padding/borders**, e.g. in example below you would apply CSS to class="entry_container", or however you name it. Vertical is fine for any internal element. If you want distance between columns, add margins to the item wrapper. There is usually no need to edit library css, unless you are doing something very specific. Spacing CSS for internal elements is fine to edit, as long as they don't somehow force width on parent containers.
 
 ### Initialization Examples:
 Full example from above
