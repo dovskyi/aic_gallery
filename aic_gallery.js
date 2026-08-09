@@ -66,6 +66,7 @@ function gallery_init(arr, gallery_container, cols, template, load_delay){
                         arr_col.push(document.getElementById(`wrapper_col_${i}${_gallID}`));
                 }
                 if (arr.length < 1) {
+                        temp.remove();
                         return;
                 }
 
